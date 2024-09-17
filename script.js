@@ -5,6 +5,11 @@ const produtos = [
     tipo: "Pequeno Porte",
     preco: 100,
     descricao: "Racão seca para animais de pequeno porte.",
+    imagens: [
+      "racao-seca-1.jpg",
+      "racao-seca-2.jpg",
+      "racao-seca-3.jpg",
+    ],
   },
   {
     nome: "Ração Úmida 3",
@@ -29,12 +34,18 @@ const produtos = [
     tipo: "Grande Porte",
     preco: 100,
     descricao: "Racão seca para animais de grande porte.",
+    imagens: [
+      "racao-seca-1.jpg",
+      "racao-seca-2.jpg",
+      "racao-seca-3.jpg",
+    ],
   },
   {
     nome: "Ração Úmida 1",
     tipo: "Grande Porte",
     preco: 180,
     descricao: "Racão úmida para animais de grande porte.",
+    imagens: ["racao-umida-1.webp", "racao-umida-2.jpeg"],
   },
   {
     nome: "Ração Úmida 2",
@@ -47,6 +58,7 @@ const produtos = [
     tipo: "Grande Porte",
     preco: 160,
     descricao: "Racão úmida para animais de grande porte.",
+    imagens: ["racao-umida-1.webp", "racao-umida-2.jpeg"],
   },
 ];
 
@@ -78,12 +90,56 @@ const servicos = [
   },
 ];
 
-// Função para criar cards de produtos
+// Função para criar cards de produtos com carrossel de imagens
 function criarCardProduto(produto) {
+  let imagensCarousel = "";
+
+  // Verifica se o produto possui várias imagens
+  if (produto.imagens && produto.imagens.length > 1) {
+    imagensCarousel = `
+      <div id="carousel-${produto.nome.replace(
+        /\s/g,
+        ""
+      )}" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+          ${produto.imagens
+            .map(
+              (imagem, index) => `
+            <div class="carousel-item ${index === 0 ? "active" : ""}">
+              <img src="${imagem}" class="d-block w-100" alt="${produto.nome}">
+            </div>
+          `
+            )
+            .join("")}
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carousel-${produto.nome.replace(
+          /\s/g,
+          ""
+        )}" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Anterior</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carousel-${produto.nome.replace(
+          /\s/g,
+          ""
+        )}" data-bs-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Próximo</span>
+        </button>
+      </div>
+    `;
+  } else {
+    // Caso tenha apenas uma imagem ou nenhuma array de imagens
+    imagensCarousel = `<img src="${
+      produto.imagens ? produto.imagens[0] : "embalagem-racao.png"
+    }" class="card-img-top" alt="${produto.nome}">`;
+  }
+
+  // Retorno do card com o carrossel ou imagem única
   return `
         <div class="col-6 col-md-3 col-12">
             <div class="card">
-                <img src="embalagem-racao.png" class="card-img-top" alt="${produto.nome}">
+                ${imagensCarousel}
                 <div class="card-body">
                     <p class="card-text">${produto.nome}</p>
                     <a class="link-detalhes" data-nome="${produto.nome}" onclick="mostrarDetalhesProduto('${produto.nome}')">Ver Detalhes</a>
@@ -187,19 +243,18 @@ function mostrarDetalhesServico(nomeServico) {
 }
 
 function mostrarAgendamentoServico(nomeServico) {
-    // Oculta todas as outras seções
-    document.querySelectorAll("section").forEach((section) => {
-      section.classList.add("d-none");
-    });
-  
-    // Exibe a seção de agendamento do serviço
-    const agendamentoSection = document.getElementById("agendamento");
-    agendamentoSection.classList.remove("d-none");
-  
-    // Preenche o nome do serviço na secão de agendamento
-    document.querySelector("#agendamento h1").textContent = nomeServico;
-  }
+  // Oculta todas as outras seções
+  document.querySelectorAll("section").forEach((section) => {
+    section.classList.add("d-none");
+  });
 
+  // Exibe a seção de agendamento do serviço
+  const agendamentoSection = document.getElementById("agendamento");
+  agendamentoSection.classList.remove("d-none");
+
+  // Preenche o nome do serviço na secão de agendamento
+  document.querySelector("#agendamento h1").textContent = nomeServico;
+}
 
 // Inicialização
 document.addEventListener("DOMContentLoaded", function () {
